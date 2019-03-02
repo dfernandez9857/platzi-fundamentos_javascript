@@ -97,6 +97,7 @@
     <div id="verde" class="color verde right" data-color="verde"></div>
     <button id="btnEmpezar" class="btn-start" onclick="empezarJuego()">Empezar a jugar!</button>
   </div>
+  
   <script>
     
     const btnEmpezar = document.querySelector('#btnEmpezar');
@@ -105,11 +106,17 @@
     const naranja = document.querySelector('#naranja');
     const verde = document.querySelector('#verde');
 
+    const ULTIMO_NIVEL = 10 ;
+
     class Juego{
       constructor(){
+
         this.inicializar();
         this.generarSecuencia();
-        this.siguienteNivel();
+
+        setTimeout(this.siguienteNivel,500);
+
+       
       };
 
       inicializar(){
@@ -121,26 +128,65 @@
           naranja,
           verde
         }
+        this.elegirColor = this.elegirColor.bind(this);
+        this.siguienteNivel = this.siguienteNivel.bind(this);
       }
       generarSecuencia(){
-        this.secuencia = new Array(10).fill(0).map(n=>Math.floor( Math.random()*4)); 
+        this.secuencia = new Array(ULTIMO_NIVEL).fill(0).map(n=>Math.floor( Math.random()*4)); 
       }
 
       siguienteNivel(){
+        this.subnivel = 0;
         this.iluminarSecuencia();
         this.agregarEventosClick();
       }
 
       agregarEventosClick(){
-        this.colores.celeste.addEventListener('click',this.elegirColor.bind(this));
-        this.colores.verde.addEventListener('click',this.elegirColor.bind(this));
-        this.colores.violeta.addEventListener('click',this.elegirColor.bind(this));
-        this.colores.naranja.addEventListener('click',this.elegirColor.bind(this));
+        this.colores.celeste.addEventListener('click',this.elegirColor);
+        this.colores.verde.addEventListener('click',this.elegirColor);
+        this.colores.violeta.addEventListener('click',this.elegirColor);
+        this.colores.naranja.addEventListener('click',this.elegirColor);
       }
 
+      eliminarEventosClick(){
+        this.colores.celeste.removeEventListener('click',this.elegirColor);
+        this.colores.verde.removeEventListener('click',this.elegirColor);
+        this.colores.violeta.removeEventListener('click',this.elegirColor);
+        this.colores.naranja.removeEventListener('click',this.elegirColor);
+      }
+
+
       elegirColor(ev){
-        console.log(this);
-        console.log(ev);
+        const nombreColor = ev.target.dataset.color;
+        const numeroColor = this.transformarColorNumero(nombreColor);
+        this.iluminarColor(nombreColor);
+
+        /*
+          Si el usuario seleccionó el color correcto en el orden de la secuencia, aumentamos 
+          en uno el subnivel para que seleccione y valide que seleccionará el siguiente color 
+          en la secuencia.
+        */
+
+        if(numeroColor=== this.secuencia[this.subnivel]){ 
+          this.subnivel++;
+          /*
+            Si el subnivel es correcto , avanza de nivel
+          */
+          if(this.subnivel === this.nivel){
+            this.nivel++;
+            this.eliminarEventosClick();
+            if(this.nivel === ULTIMO_NIVEL + 1){
+              //Ganó
+
+            }else
+              setTimeout(this.siguienteNivel,1500);
+            
+
+          }
+        }else{
+          //Perdio
+        }
+
       }
 
       transformarNumeroColor(numero){
@@ -153,6 +199,20 @@
             return 'naranja'
           case 3 :
             return 'verde'
+          }
+
+      }
+
+      transformarColorNumero(color){
+        switch(color){
+          case 'celeste' :
+            return 0
+          case 'violeta' :
+            return 1
+          case 'naranja' :
+            return 2
+          case 'verde' :
+            return 3
           }
 
       }
@@ -180,6 +240,7 @@
     }
     
     function empezarJuego() {
+
       window.juego = new Juego();
 
       
