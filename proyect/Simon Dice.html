@@ -86,6 +86,11 @@
     .hide {
       display: none;
     }
+
+    *{
+      font-family: Arial;
+    }
+
   </style>
 </head>
 
@@ -97,6 +102,8 @@
     <div id="verde" class="color verde right" data-color="verde"></div>
     <button id="btnEmpezar" class="btn-start" onclick="empezarJuego()">Empezar a jugar!</button>
   </div>
+
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   
   <script>
     
@@ -106,10 +113,14 @@
     const naranja = document.querySelector('#naranja');
     const verde = document.querySelector('#verde');
 
-    const ULTIMO_NIVEL = 10 ;
+    const ULTIMO_NIVEL = 2 ;
+
+
 
     class Juego{
       constructor(){
+
+        this.inicializar = this.inicializar.bind(this);
 
         this.inicializar();
         this.generarSecuencia();
@@ -120,7 +131,7 @@
       };
 
       inicializar(){
-        btnEmpezar.classList.add('hide');
+        btnEmpezar.classList.toggle('hide');
         this.nivel = 1;
         this.colores = {
           celeste,
@@ -177,6 +188,7 @@
             this.eliminarEventosClick();
             if(this.nivel === ULTIMO_NIVEL + 1){
               //Ganó
+              this.ganoElJuego();
 
             }else
               setTimeout(this.siguienteNivel,1500);
@@ -185,6 +197,9 @@
           }
         }else{
           //Perdio
+
+          this.perdioElJuego();
+
         }
 
       }
@@ -235,6 +250,24 @@
 
       apagarColor(color){
         this.colores[color].classList.remove('light');
+      }
+
+      ganoElJuego(){
+
+        swal('Platzi','Felicitaciones ganaste el juego!','success')
+          .then(()=>{
+            this.inicializar();
+          });
+
+      }
+
+      perdioElJuego(){
+
+        swal('Platzi','Lo lamentamos, perdiste el juego!','error')
+          .then(()=>{
+            this.eliminarEventosClick();
+            this.inicializar();
+          });
       }
 
     }
